@@ -1011,14 +1011,15 @@
             const prompt = `${cfg.quizPrompt}\nGenerate a fresh, unique question. Seed: ${Date.now()}`;
 
             try {
-                const url = `https://text.pollinations.ai/prompt/${encodeURIComponent(prompt)}?model=openai&cache=false&seed=${Date.now()}`;
-                const response = await fetch(url);
+                const url = `https://text.pollinations.ai/${encodeURIComponent(prompt)}`;
+                const response = await fetchWithTimeout(url, {}, 5000);
                 if (!response.ok) throw new Error("Quiz API Error");
                 const rawText = await response.text();
                 removeTypingIndicator();
                 setGuruState('idle', 'SYSTEM READY');
                 renderQuizCard(rawText);
             } catch (err) {
+                console.warn("Quiz API timed out, using fallback question...", err);
                 removeTypingIndicator();
                 setGuruState('idle', 'SYSTEM READY');
                 // Fallback built-in question
@@ -1143,31 +1144,102 @@ Expl: CPU कंप्यूटर की सारी गणनाएं और
         }
 
         /* --------------------------------------------------------------------------
-           AI Response (Pollinations.ai Free Backend + Memory)
+           AI Response with Multi-Tier Fallback & Built-in Knowledge Base
            -------------------------------------------------------------------------- */
+        const offlineITKnowledge = {
+            mewari: [
+                { match: /ram|rom|memory/i, ans: "RAM (Random Access Memory) कंप्यूटर री अस्थायी मेमोरी है सा। ओ चालू काम ने तेज़ करे, पण कंप्यूटर बंद होता ही खाली हो जावे।" },
+                { match: /cpu|processor|दिमाग/i, ans: "CPU कंप्यूटर रो 'दिमाग' है सा! ओ सारा हिसाब-किताब, गणना और काम चलावण रो मुख्य भाग होवे है।" },
+                { match: /internet|net|इंटरनेट/i, ans: "इंटरनेट दुनिया भर रा कंप्युटरां रो एक बड़ो जाळो (Network) है सा, जिण सूं आपां सूचना और संदेश पलक झपकतां भेज सकां।" },
+                { match: /virus|सुरक्षा|हैक/i, ans: "कंप्यूटर वायरस एक खोटा प्रोग्राम होवे सा जो फाइलां खराब करे। ईं सूं बचाव खातर एंटीवायरस राकणो ज़रूरी है।" },
+                { match: /coding|python|program/i, ans: "कोडिंग कंप्यूटर ने आपणी भाषा में काम सिखावण री कला है सा। ईं सूं नवा ऐप और वेबसाइट बणे है।" }
+            ],
+            hindi: [
+                { match: /ram|rom|memory/i, ans: "RAM (Random Access Memory) कंप्यूटर की तेज़ अस्थायी मेमोरी है। यह चालू प्रोग्राम्स को तेज़ चलाती है, लेकिन स्विच ऑफ होते ही डेटा हट जाता है।" },
+                { match: /cpu|processor|दिमाग/i, ans: "CPU को कंप्यूटर का दिमाग कहते हैं। यह सभी निर्देशों को प्रोसेस करता है और सारे हार्डवेयर को नियंत्रित करता है।" },
+                { match: /internet|net|इंटरनेट/i, ans: "इंटरनेट दुनिया भर के कंप्यूटरों का एक विशाल नेटवर्क है, जिसके ज़रिये सूचना और डेटा का आदान-प्रदान सेकंडों में होता है।" },
+                { match: /virus|सुरक्षा|हैक/i, ans: "कंप्यूटर वायरस एक दुर्भावनापूर्ण सॉफ़्टवेयर है जो डेटा चुरा या नष्ट कर सकता है। सुरक्षित ब्राउज़िंग और एंटीवायरस से बचें।" },
+                { match: /coding|python|program/i, ans: "कोडिंग का मतलब कंप्यूटर को निर्देश देना है। Python और JavaScript जैसी भाषाओं से ऐप, गेम और वेबसाइट्स बनती हैं।" }
+            ],
+            bhojpuri: [
+                { match: /ram|rom|memory/i, ans: "RAM कम्प्यूटर के अस्थाई मेमोरी ह, जवना से चालू काम खूब तेज़ी से चलेला।" },
+                { match: /cpu|processor/i, ans: "CPU कम्प्यूटर के दिमाग ह, जवन हर एक काम आ हिसाब-किताब के सम्हाले ला।" },
+                { match: /internet|net/i, ans: "इंटरनेट दुनिया भर के कम्प्यूटरन के जोड़ल एगो जाला ह, जवना से जानकारी तुरंते मिल जाला।" }
+            ],
+            gujarati: [
+                { match: /ram|rom|memory/i, ans: "RAM કમ્પ્યુટરની અસ્થાયી મેમરી છે જે પ્રોગ્રામ્સને ઝડપથી ચલાવવામાં મદદ કરે છે." },
+                { match: /cpu|processor/i, ans: "CPU કમ્પ્યુટરનું મગજ છે, જે તમામ ગણતરીઓ અને કાર્યોનું સંચાલન કરે છે." },
+                { match: /internet|net/i, ans: "ઇન્ટરનેટ વિશ્વભરના કમ્પ્યુટર્સનું નેટવર્ક છે, જે માહિતીની ત્વરિત આપ-લે કરે છે." }
+            ],
+            english: [
+                { match: /ram|rom|memory/i, ans: "RAM (Random Access Memory) is short-term fast memory that holds data your CPU needs right now. It resets when powered off." },
+                { match: /cpu|processor/i, ans: "The CPU (Central Processing Unit) is the brain of the computer that executes calculations and runs software instructions." },
+                { match: /internet|net/i, ans: "The Internet is a massive global network connecting billions of devices for instant communication and data sharing." }
+            ]
+        };
+
+        function getSmartFallback(query) {
+            const list = offlineITKnowledge[currentLang] || offlineITKnowledge['hindi'];
+            for (const item of list) {
+                if (item.match.test(query)) {
+                    return item.ans;
+                }
+            }
+            if (currentLang === 'mewari') {
+                return "हाँ सा! कंप्यूटर विज्ञान में ओ घणो मुख्य विषय है। एक बार फिर पूछो या दूसरो सवाल ट्राई करो सा।";
+            } else if (currentLang === 'english') {
+                return "That is an essential IT concept! Please ask with more specifics or try another topic.";
+            } else {
+                return "कंप्यूटर विज्ञान में यह बहुत महत्वपूर्ण संकल्पना है। कृपया एक बार फिर पूछें या दूसरा सवाल चुनें।";
+            }
+        }
+
+        async function fetchWithTimeout(url, options = {}, timeoutMs = 8000) {
+            const controller = new AbortController();
+            const id = setTimeout(() => controller.abort(), timeoutMs);
+            try {
+                const response = await fetch(url, { ...options, signal: controller.signal });
+                clearTimeout(id);
+                return response;
+            } catch (e) {
+                clearTimeout(id);
+                throw e;
+            }
+        }
+
         async function getAIResponse(userQuery) {
             const cfg = langConfig[currentLang];
+            const cleanQuery = userQuery.trim();
 
-            // Build contextual prompt including recent conversation turns
-            let memorySnippet = "";
-            if (conversationHistory.length > 0) {
-                memorySnippet = "Recent conversation context:\n" +
-                    conversationHistory.slice(-4).map(turn => `${turn.role === 'user' ? 'Student' : 'Guru'}: ${turn.text}`).join('\n') +
-                    "\n\n";
-            }
+            // Build concise, high-speed prompt
+            const promptText = `${cfg.prompt} Answer concisely in 2 short sentences. Question: ${cleanQuery}`;
 
-            const systemPrompt = `${cfg.prompt}\n${memorySnippet}Student asks: ${userQuery}\nMentor response:`;
-
+            // Strategy 1: Fast direct prompt
             try {
-                const url = `https://text.pollinations.ai/prompt/${encodeURIComponent(systemPrompt)}?model=openai&cache=false&seed=${Date.now()}`;
-                const response = await fetch(url);
-                if (!response.ok) throw new Error("Pollinations API failed");
-                let reply = await response.text();
-                reply = reply.replace(/[*#_~`]/g, '').trim();
-                return reply || "हाँ सा, कंप्यूटर में ईं बात रो घणो महत्व है।";
-            } catch (err) {
-                return "माफी चाहूँ सा, नेटवर्क थोड़ा धीमे चल रहा है। एक बार फिर कोशिश करो सा!";
+                const url1 = `https://text.pollinations.ai/${encodeURIComponent(promptText)}`;
+                const res1 = await fetchWithTimeout(url1, {}, 6000);
+                if (res1.ok) {
+                    const txt = (await res1.text()).replace(/[*#_~`]/g, '').trim();
+                    if (txt && txt.length > 5) return txt;
+                }
+            } catch (e) {
+                console.warn("Strategy 1 timed out, trying Strategy 2...", e);
             }
+
+            // Strategy 2: Legacy prompt endpoint with model flag
+            try {
+                const url2 = `https://text.pollinations.ai/prompt/${encodeURIComponent(promptText)}?model=openai&cache=false`;
+                const res2 = await fetchWithTimeout(url2, {}, 6000);
+                if (res2.ok) {
+                    const txt = (await res2.text()).replace(/[*#_~`]/g, '').trim();
+                    if (txt && txt.length > 5) return txt;
+                }
+            } catch (e) {
+                console.warn("Strategy 2 timed out, using smart knowledge base...", e);
+            }
+
+            // Strategy 3: Guaranteed instant knowledge base response (never fails!)
+            return getSmartFallback(cleanQuery);
         }
 
         /* --------------------------------------------------------------------------
