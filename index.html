@@ -1,163 +1,1503 @@
 <!DOCTYPE html>
-<html lang="hi">
+<html lang="hi" data-theme="dark">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>MANAS Ai | IT Guru</title>
-    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@400;700&display=swap" rel="stylesheet">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>MANAS AI | Mewari IT Guru</title>
+    <meta name="description" content="MANAS AI — Voice-first IT Mentor for rural Rajasthan. Learn IT concepts in Mewari, Hindi, Bhojpuri, Gujarati & English. Free interactive quizzes, voice chat, and instant knowledge.">
+    <meta name="theme-color" content="#6366f1">
+    <link rel="manifest" href="manifest.json">
+    <link rel="icon" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><text y=%22.9em%22 font-size=%2290%22>🧠</text></svg>">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
     <style>
-        body { 
-            background: #020617; 
-            color: white; 
-            font-family: 'Outfit', sans-serif; 
-            display: flex; 
-            justify-content: center; 
-            align-items: center; 
-            height: 100vh; 
-            margin: 0; 
+        /* ── Reset & Variables ── */
+        *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+        :root[data-theme="dark"] {
+            --bg: #030712;
+            --surface: #0f172a;
+            --surface-hover: #1e293b;
+            --card: #111827;
+            --card-border: rgba(99, 102, 241, 0.25);
+            --border: #1f2937;
+            --border-light: #374151;
+            --purple: #6366f1;
+            --purple-hover: #4f46e5;
+            --purple-light: #818cf8;
+            --purple-glow: rgba(99, 102, 241, 0.35);
+            --text-main: #f8fafc;
+            --text-muted: #94a3b8;
+            --slate: #64748b;
+            --bubble-guru: #1e293b;
+            --bubble-user: linear-gradient(135deg, #6366f1, #4f46e5);
+            --green: #10b981;
+            --green-glow: rgba(16, 185, 129, 0.3);
+            --red: #ef4444;
+            --amber: #f59e0b;
         }
-        .card { 
-            background: #1e293b; 
-            padding: 2rem; 
-            border-radius: 30px; 
-            width: 90%; 
-            max-width: 400px; 
-            text-align: center; 
-            border: 2px solid #6366f1; 
-            box-shadow: 0 20px 50px rgba(0,0,0,0.5); 
+
+        :root[data-theme="light"] {
+            --bg: #f8fafc;
+            --surface: #ffffff;
+            --surface-hover: #f1f5f9;
+            --card: #ffffff;
+            --card-border: rgba(99, 102, 241, 0.3);
+            --border: #e2e8f0;
+            --border-light: #cbd5e1;
+            --purple: #6366f1;
+            --purple-hover: #4f46e5;
+            --purple-light: #4f46e5;
+            --purple-glow: rgba(99, 102, 241, 0.2);
+            --text-main: #0f172a;
+            --text-muted: #475569;
+            --slate: #64748b;
+            --bubble-guru: #f1f5f9;
+            --bubble-user: linear-gradient(135deg, #6366f1, #4f46e5);
+            --green: #059669;
+            --green-glow: rgba(5, 150, 105, 0.25);
+            --red: #dc2626;
+            --amber: #d97706;
         }
-        h2 { color: #818cf8; margin-bottom: 5px; text-transform: uppercase; letter-spacing: 2px; }
-        #chat { 
-            height: 280px; 
-            overflow-y: auto; 
-            background: #0f172a; 
-            margin: 20px 0; 
-            padding: 15px; 
-            border-radius: 15px; 
-            text-align: left; 
-            border: 1px solid #334155;
-            font-size: 1.1rem;
-            line-height: 1.6;
+
+        body {
+            background: var(--bg);
+            color: var(--text-main);
+            font-family: 'Outfit', -apple-system, BlinkMacSystemFont, sans-serif;
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            padding: 12px;
+            transition: background 0.3s ease, color 0.3s ease;
+            background-image: 
+                radial-gradient(circle at 15% 20%, rgba(99, 102, 241, 0.12) 0%, transparent 40%),
+                radial-gradient(circle at 85% 80%, rgba(16, 185, 129, 0.08) 0%, transparent 40%);
+            background-attachment: fixed;
         }
-        #mic { 
-            width: 80px; 
-            height: 80px; 
-            border-radius: 50%; 
-            border: none; 
-            background: #6366f1; 
-            color: white; 
-            font-size: 32px; 
-            cursor: pointer; 
-            transition: 0.3s;
-            box-shadow: 0 0 20px rgba(99, 102, 241, 0.4);
+
+        /* ── Container Card ── */
+        .app-container {
+            width: 100%;
+            max-width: 520px;
+            background: var(--card);
+            border: 1.5px solid var(--card-border);
+            border-radius: 28px;
+            padding: 20px;
+            box-shadow: 0 25px 60px -15px rgba(0, 0, 0, 0.5), 0 0 40px var(--purple-glow);
+            display: flex;
+            flex-direction: column;
+            gap: 14px;
+            backdrop-filter: blur(16px);
+            position: relative;
         }
-        #mic:hover { transform: scale(1.1); }
-        .listening { 
-            background: #ef4444 !important; 
-            animation: pulse 1s infinite; 
-            box-shadow: 0 0 30px rgba(239, 68, 68, 0.6) !important;
+
+        /* ── Top Bar ── */
+        .top-bar {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding-bottom: 8px;
+            border-bottom: 1px solid var(--border);
         }
-        @keyframes pulse { 
-            0% { transform: scale(1); } 
-            50% { transform: scale(1.1); } 
-            100% { transform: scale(1); } 
+
+        .badge-brand {
+            display: flex;
+            align-items: center;
+            gap: 8px;
         }
-        #status { margin-top: 15px; color: #94a3b8; font-weight: bold; font-size: 14px; }
-        .user-txt { color: #818cf8; font-weight: bold; margin-bottom: 10px; }
+
+        .brand-avatar {
+            width: 38px;
+            height: 38px;
+            border-radius: 50%;
+            background: linear-gradient(135deg, #6366f1, #a855f7);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 20px;
+            box-shadow: 0 0 15px var(--purple-glow);
+            animation: pulse-avatar 3s infinite ease-in-out;
+            cursor: pointer;
+            transition: transform 0.2s;
+        }
+
+        .brand-avatar:hover {
+            transform: scale(1.08);
+        }
+
+        .brand-avatar.thinking {
+            box-shadow: 0 0 20px var(--amber);
+            animation: spin-pulse 1.2s infinite ease-in-out;
+        }
+
+        .brand-avatar.listening {
+            box-shadow: 0 0 25px var(--red);
+            animation: pulse-red 0.8s infinite alternate;
+        }
+
+        .brand-avatar.speaking {
+            box-shadow: 0 0 25px var(--green);
+            animation: pulse-green 1s infinite alternate;
+        }
+
+        @keyframes pulse-avatar {
+            0%, 100% { transform: scale(1); }
+            50% { transform: scale(1.05); }
+        }
+        @keyframes pulse-red {
+            from { transform: scale(1); }
+            to { transform: scale(1.12); }
+        }
+        @keyframes pulse-green {
+            from { transform: scale(1); }
+            to { transform: scale(1.08); }
+        }
+
+        .brand-title {
+            font-size: 19px;
+            font-weight: 800;
+            letter-spacing: 1.5px;
+            color: var(--text-main);
+            display: flex;
+            align-items: center;
+            gap: 6px;
+        }
+
+        .brand-title span {
+            color: var(--purple-light);
+            font-weight: 800;
+        }
+
+        .top-controls {
+            display: flex;
+            align-items: center;
+            gap: 6px;
+        }
+
+        .icon-btn {
+            background: var(--surface);
+            border: 1px solid var(--border);
+            color: var(--text-muted);
+            width: 32px;
+            height: 32px;
+            border-radius: 10px;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            font-size: 14px;
+            transition: all 0.2s ease;
+        }
+
+        .icon-btn:hover {
+            background: var(--surface-hover);
+            color: var(--text-main);
+            border-color: var(--purple);
+            transform: translateY(-1px);
+        }
+
+        .quiz-toggle-btn {
+            background: var(--surface);
+            border: 1px solid var(--border);
+            color: var(--text-main);
+            padding: 5px 10px;
+            border-radius: 12px;
+            font-size: 12px;
+            font-weight: 600;
+            display: inline-flex;
+            align-items: center;
+            gap: 5px;
+            cursor: pointer;
+            transition: all 0.2s ease;
+        }
+
+        .quiz-toggle-btn.active {
+            background: linear-gradient(135deg, #10b981, #059669);
+            color: white;
+            border-color: #10b981;
+            box-shadow: 0 0 15px var(--green-glow);
+        }
+
+        /* ── Subtitle / Info ── */
+        .info-row {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            font-size: 11px;
+            color: var(--text-muted);
+            font-weight: 500;
+            padding: 0 4px;
+        }
+
+        .guru-status {
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+            background: var(--surface);
+            padding: 3px 9px;
+            border-radius: 20px;
+            border: 1px solid var(--border);
+        }
+
+        .status-dot {
+            width: 7px;
+            height: 7px;
+            border-radius: 50%;
+            background: var(--green);
+            box-shadow: 0 0 8px var(--green);
+        }
+
+        .status-dot.listening {
+            background: var(--red);
+            box-shadow: 0 0 10px var(--red);
+            animation: pulse-avatar 0.6s infinite alternate;
+        }
+
+        .status-dot.thinking {
+            background: var(--amber);
+            box-shadow: 0 0 10px var(--amber);
+        }
+
+        .quiz-score-badge {
+            display: none;
+            background: rgba(16, 185, 129, 0.15);
+            border: 1px solid var(--green);
+            color: var(--green);
+            padding: 2px 8px;
+            border-radius: 12px;
+            font-weight: 700;
+        }
+
+        /* ── Language Chips ── */
+        .lang-scroll {
+            display: flex;
+            gap: 6px;
+            overflow-x: auto;
+            padding-bottom: 2px;
+            scrollbar-width: none;
+        }
+        .lang-scroll::-webkit-scrollbar { display: none; }
+
+        .lang-pill {
+            padding: 5px 12px;
+            border-radius: 16px;
+            font-size: 12px;
+            font-weight: 600;
+            border: 1px solid var(--border);
+            background: var(--surface);
+            color: var(--text-muted);
+            cursor: pointer;
+            white-space: nowrap;
+            transition: all 0.2s ease;
+        }
+
+        .lang-pill:hover {
+            border-color: var(--purple-light);
+            color: var(--text-main);
+        }
+
+        .lang-pill.active {
+            background: var(--purple);
+            border-color: var(--purple);
+            color: #ffffff;
+            box-shadow: 0 0 12px var(--purple-glow);
+        }
+
+        /* ── Chat Display ── */
+        #chat {
+            height: 310px;
+            overflow-y: auto;
+            background: var(--surface);
+            border-radius: 20px;
+            padding: 16px;
+            border: 1px solid var(--border);
+            display: flex;
+            flex-direction: column;
+            gap: 14px;
+            scroll-behavior: smooth;
+        }
+
+        #chat::-webkit-scrollbar { width: 5px; }
+        #chat::-webkit-scrollbar-thumb { background: var(--border-light); border-radius: 5px; }
+
+        .msg-group {
+            display: flex;
+            flex-direction: column;
+            gap: 4px;
+            animation: fadeIn 0.25s ease-out;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(6px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        .msg-group.user { align-items: flex-end; }
+        .msg-group.guru { align-items: flex-start; }
+
+        .msg-sender {
+            font-size: 10px;
+            font-weight: 700;
+            letter-spacing: 0.8px;
+            color: var(--slate);
+            text-transform: uppercase;
+            padding: 0 4px;
+        }
+
+        .msg-bubble {
+            max-width: 88%;
+            padding: 11px 15px;
+            border-radius: 18px;
+            font-size: 14px;
+            line-height: 1.55;
+            word-break: break-word;
+            position: relative;
+        }
+
+        .msg-group.user .msg-bubble {
+            background: var(--bubble-user);
+            color: white;
+            border-bottom-right-radius: 4px;
+            box-shadow: 0 4px 15px rgba(99, 102, 241, 0.25);
+        }
+
+        .msg-group.guru .msg-bubble {
+            background: var(--bubble-guru);
+            color: var(--text-main);
+            border-bottom-left-radius: 4px;
+            border: 1px solid var(--border);
+        }
+
+        /* Action buttons below AI bubbles (TTS replay + Share) */
+        .bubble-actions {
+            display: flex;
+            gap: 6px;
+            margin-top: 6px;
+            padding: 0 2px;
+        }
+
+        .mini-action-btn {
+            background: transparent;
+            border: none;
+            color: var(--text-muted);
+            cursor: pointer;
+            font-size: 12px;
+            padding: 2px 6px;
+            border-radius: 6px;
+            transition: all 0.2s;
+            display: inline-flex;
+            align-items: center;
+            gap: 4px;
+        }
+
+        .mini-action-btn:hover {
+            background: var(--surface-hover);
+            color: var(--purple-light);
+        }
+
+        /* ── Quiz Card Inside Chat ── */
+        .quiz-card {
+            background: var(--surface);
+            border: 1.5px solid var(--purple);
+            border-radius: 16px;
+            padding: 14px;
+            margin-top: 6px;
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+            width: 100%;
+        }
+
+        .quiz-question {
+            font-size: 14px;
+            font-weight: 700;
+            color: var(--text-main);
+        }
+
+        .quiz-options {
+            display: grid;
+            grid-template-columns: 1fr;
+            gap: 8px;
+        }
+
+        .quiz-opt-btn {
+            background: var(--card);
+            border: 1px solid var(--border);
+            color: var(--text-main);
+            padding: 8px 12px;
+            border-radius: 10px;
+            font-size: 13px;
+            text-align: left;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            font-family: inherit;
+        }
+
+        .quiz-opt-btn:hover {
+            border-color: var(--purple);
+            background: var(--surface-hover);
+            transform: translateX(3px);
+        }
+
+        .quiz-opt-btn.correct {
+            background: rgba(16, 185, 129, 0.2) !important;
+            border-color: var(--green) !important;
+            color: var(--green) !important;
+            font-weight: 700;
+        }
+
+        .quiz-opt-btn.wrong {
+            background: rgba(239, 68, 68, 0.2) !important;
+            border-color: var(--red) !important;
+            color: var(--red) !important;
+        }
+
+        .quiz-opt-btn:disabled {
+            cursor: not-allowed;
+            opacity: 0.8;
+        }
+
+        /* ── Typing Indicator ── */
+        .typing-bubble {
+            display: inline-flex;
+            align-items: center;
+            gap: 5px;
+            padding: 10px 14px;
+            background: var(--bubble-guru);
+            border: 1px solid var(--border);
+            border-radius: 18px;
+            border-bottom-left-radius: 4px;
+            width: fit-content;
+        }
+
+        .typing-bubble span {
+            width: 6px;
+            height: 6px;
+            border-radius: 50%;
+            background: var(--purple-light);
+            animation: bounce-dot 1.2s infinite ease-in-out;
+        }
+        .typing-bubble span:nth-child(2) { animation-delay: 0.2s; }
+        .typing-bubble span:nth-child(3) { animation-delay: 0.4s; }
+
+        @keyframes bounce-dot {
+            0%, 80%, 100% { transform: translateY(0); opacity: 0.4; }
+            40% { transform: translateY(-6px); opacity: 1; }
+        }
+
+        /* ── Suggestions Chips ── */
+        .suggestions-container {
+            display: flex;
+            gap: 6px;
+            overflow-x: auto;
+            scrollbar-width: none;
+            padding: 2px 0;
+        }
+        .suggestions-container::-webkit-scrollbar { display: none; }
+
+        .sugg-chip {
+            background: var(--surface);
+            border: 1px solid var(--border);
+            color: var(--text-muted);
+            padding: 6px 12px;
+            border-radius: 20px;
+            font-size: 12px;
+            font-weight: 500;
+            white-space: nowrap;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            font-family: inherit;
+        }
+
+        .sugg-chip:hover {
+            border-color: var(--purple);
+            color: var(--purple-light);
+            background: var(--surface-hover);
+            transform: translateY(-1px);
+        }
+
+        /* ── Input Box & Controls ── */
+        .input-row {
+            display: flex;
+            gap: 8px;
+            align-items: center;
+        }
+
+        .text-input-wrap {
+            flex: 1;
+            position: relative;
+            display: flex;
+            align-items: center;
+        }
+
+        #textInput {
+            width: 100%;
+            background: var(--surface);
+            border: 1px solid var(--border);
+            border-radius: 16px;
+            padding: 12px 16px;
+            color: var(--text-main);
+            font-family: 'Outfit', sans-serif;
+            font-size: 14px;
+            outline: none;
+            transition: all 0.2s ease;
+        }
+
+        #textInput:focus {
+            border-color: var(--purple);
+            box-shadow: 0 0 12px var(--purple-glow);
+        }
+
+        #textInput::placeholder {
+            color: var(--slate);
+        }
+
+        .btn-send {
+            width: 44px;
+            height: 44px;
+            border-radius: 14px;
+            border: none;
+            background: var(--purple);
+            color: white;
+            font-size: 17px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            box-shadow: 0 4px 14px var(--purple-glow);
+            flex-shrink: 0;
+        }
+
+        .btn-send:hover {
+            background: var(--purple-hover);
+            transform: scale(1.05);
+        }
+
+        /* ── Mic Button & Voice HUD ── */
+        .voice-section {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 8px;
+            padding-top: 4px;
+        }
+
+        .mic-btn-wrapper {
+            position: relative;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        #mic {
+            width: 68px;
+            height: 68px;
+            border-radius: 50%;
+            border: none;
+            background: linear-gradient(135deg, #6366f1, #4f46e5);
+            color: white;
+            font-size: 28px;
+            cursor: pointer;
+            transition: all 0.25s ease;
+            box-shadow: 0 0 25px var(--purple-glow);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            position: relative;
+            z-index: 2;
+        }
+
+        #mic:hover {
+            transform: scale(1.06);
+            box-shadow: 0 0 35px var(--purple-glow);
+        }
+
+        #mic.listening {
+            background: linear-gradient(135deg, #ef4444, #dc2626) !important;
+            box-shadow: 0 0 35px rgba(239, 68, 68, 0.6) !important;
+            animation: pulse-avatar 0.9s infinite alternate;
+        }
+
+        /* Ripple wave effects during voice listening */
+        .ripple-ring {
+            position: absolute;
+            width: 68px;
+            height: 68px;
+            border-radius: 50%;
+            border: 2px solid var(--red);
+            opacity: 0;
+            pointer-events: none;
+            z-index: 1;
+        }
+
+        #mic.listening ~ .ripple-ring-1 {
+            animation: ripple-wave 1.6s ease-out infinite;
+        }
+        #mic.listening ~ .ripple-ring-2 {
+            animation: ripple-wave 1.6s ease-out infinite 0.5s;
+        }
+
+        @keyframes ripple-wave {
+            0% { transform: scale(1); opacity: 0.8; }
+            100% { transform: scale(2.2); opacity: 0; }
+        }
+
+        .status-text {
+            font-size: 11px;
+            font-weight: 700;
+            letter-spacing: 1.5px;
+            color: var(--text-muted);
+            text-transform: uppercase;
+        }
+
+        /* ── Offline Banner ── */
+        #offlineBanner {
+            display: none;
+            background: var(--amber);
+            color: #000;
+            font-size: 11px;
+            font-weight: 700;
+            text-align: center;
+            padding: 5px;
+            border-radius: 8px;
+            margin-bottom: 4px;
+        }
+
+        /* ── Footer ── */
+        .footer {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            font-size: 11px;
+            color: var(--slate);
+            padding: 0 4px;
+        }
+
+        .footer a {
+            color: var(--purple-light);
+            text-decoration: none;
+            font-weight: 600;
+        }
+
+        .footer a:hover {
+            text-decoration: underline;
+        }
+
+        /* Install App Toast */
+        #installToast {
+            display: none;
+            background: var(--surface);
+            border: 1px solid var(--purple);
+            padding: 8px 14px;
+            border-radius: 14px;
+            font-size: 12px;
+            display: none;
+            justify-content: space-between;
+            align-items: center;
+            box-shadow: 0 10px 25px rgba(0, 0, 0, 0.3);
+        }
+
+        .install-btn {
+            background: var(--purple);
+            color: white;
+            border: none;
+            padding: 4px 10px;
+            border-radius: 8px;
+            cursor: pointer;
+            font-weight: 600;
+            font-size: 11px;
+        }
     </style>
 </head>
 <body>
 
-    <div class="card">
-        <h2>MANAS AI</h2>
-        <p style="margin:0; font-size:14px; color:#94a3b8;">Mewari IT Guru</p>
-        
-        <div id="chat">
-            Khamma Ghani!MainB MANAS hoon. <br><br>
-            Mic button dabao aur IT ke baare mein kuch bhi pucho!
+    <div class="app-container">
+
+        <!-- Offline notification -->
+        <div id="offlineBanner">⚡ Offline Mode: Voice recognition might be limited</div>
+
+        <!-- Top Navigation & Brand Header -->
+        <div class="top-bar">
+            <div class="badge-brand">
+                <div class="brand-avatar" id="avatarIcon" onclick="speakGreeting()" title="Tap to hear Guru intro">
+                    🧠
+                </div>
+                <div>
+                    <div class="brand-title">MANAS <span>AI</span></div>
+                    <div style="font-size: 11px; color: var(--text-muted); font-weight: 500;">Mewari IT Guru · 2026</div>
+                </div>
+            </div>
+
+            <div class="top-controls">
+                <button class="quiz-toggle-btn" id="quizModeBtn" onclick="toggleQuizMode()" title="Toggle IT Quiz Mode">
+                    🎓 Quiz Mode
+                </button>
+                <button class="icon-btn" onclick="toggleTheme()" id="themeBtn" title="Switch Theme">
+                    🌙
+                </button>
+                <button class="icon-btn" onclick="clearChat()" title="Clear Chat History">
+                    🗑️
+                </button>
+            </div>
         </div>
-        
-        <button id="mic" onclick="startProcess()">🎤</button>
-        <p id="status">SYSTEM READY</p>
+
+        <!-- System Status Bar -->
+        <div class="info-row">
+            <div class="guru-status">
+                <div class="status-dot" id="statusDot"></div>
+                <span id="statusLabel">SYSTEM READY</span>
+            </div>
+            <div class="quiz-score-badge" id="quizScoreBadge">
+                Score: <span id="quizScore">0</span>/<span id="quizTotal">0</span>
+            </div>
+            <div style="font-size: 11px; color: var(--text-muted);" id="apiBadge">
+                ⚡ Free AI Live
+            </div>
+        </div>
+
+        <!-- Language Selector Pills -->
+        <div class="lang-scroll">
+            <button class="lang-pill active" onclick="setLang('mewari', this)">🏰 मेवाड़ी (Mewari)</button>
+            <button class="lang-pill" onclick="setLang('hindi', this)">🇮🇳 हिन्दी (Hindi)</button>
+            <button class="lang-pill" onclick="setLang('bhojpuri', this)">🪔 भोजपुरी (Bhojpuri)</button>
+            <button class="lang-pill" onclick="setLang('gujarati', this)">🦁 ગુજરાતી (Gujarati)</button>
+            <button class="lang-pill" onclick="setLang('english', this)">🌐 English</button>
+        </div>
+
+        <!-- Chat Conversation Area -->
+        <div id="chat">
+            <div class="msg-group guru">
+                <div class="msg-sender">MANAS GURU</div>
+                <div class="msg-bubble">
+                    🙏 <b>खम्मा घणी सा!</b> म्हें MANAS हूँ — आपरो आपरो मेवाड़ी IT गुरु।<br><br>
+                    🎙️ माइक दबाइने पूछो या नीचे टाइप करो — कंप्यूटर, RAM, Internet, Coding रो कोई भी सवाल!
+                </div>
+                <div class="bubble-actions">
+                    <button class="mini-action-btn" onclick="speakCurrentBubble(this)">🔊 सुणो</button>
+                </div>
+            </div>
+        </div>
+
+        <!-- Quick Question Suggestions -->
+        <div class="suggestions-container" id="suggestionsBox">
+            <!-- Dynamically populated based on active language -->
+        </div>
+
+        <!-- Text Input Row -->
+        <div class="input-row">
+            <div class="text-input-wrap">
+                <input type="text" id="textInput" placeholder="सवाल टाइप करो या माइक दबाओ..." autocomplete="off" />
+            </div>
+            <button class="btn-send" onclick="sendText()" title="Send query">
+                ➤
+            </button>
+        </div>
+
+        <!-- Voice Interaction Section -->
+        <div class="voice-section">
+            <div class="mic-btn-wrapper">
+                <button id="mic" onclick="startVoice()" title="Tap to Speak (Voice Input)">
+                    🎤
+                </button>
+                <div class="ripple-ring ripple-ring-1"></div>
+                <div class="ripple-ring ripple-ring-2"></div>
+            </div>
+            <div class="status-text" id="micStatusText">माइक दबाइने बोलो</div>
+        </div>
+
+        <!-- PWA Install Prompt (if available) -->
+        <div id="installToast">
+            <span>📲 MANAS AI फ़ोन में इनस्टॉल करो!</span>
+            <button class="install-btn" id="installBtn">Install</button>
+        </div>
+
+        <!-- Footer -->
+        <div class="footer">
+            <span>Lakecity Hackathon 2026</span>
+            <a href="https://github.com/divyarajsingh2021-pixel/Manas-Ai" target="_blank" rel="noopener">
+                ⭐ GitHub Repo
+            </a>
+        </div>
+
     </div>
 
     <script>
-        // Use speech synthesis for voice output
-        const synth = window.speechSynthesis;
+        /* ==========================================================================
+           MANAS AI — Core Application Logic
+           ========================================================================== */
 
-        async function getAIResponse(userText) {
-            // FORCING Hindi and Mewari in the prompt
-            const systemPrompt = "You are an IT Guru named Bhumik. You must answer only in Hindi and Mewari script. Keep it to 2 short sentences. Question: ";
-            
-            try {
-                const url = `https://text.pollinations.ai/prompt/${encodeURIComponent(systemPrompt + userText)}?model=openai&cache=false`;
-                const response = await fetch(url);
-                if (!response.ok) throw new Error("Network issues");
-                const text = await response.text();
-                return text;
-            } catch (err) {
-                return "Maafi chahu, network dheere chal ryo hai. Phir koshish karo sa.";
+        const synth = window.speechSynthesis;
+        let currentLang = 'mewari';
+        let isQuizMode = false;
+        let quizScore = 0;
+        let quizTotal = 0;
+        let isProcessing = false;
+        let deferredPrompt = null;
+        let conversationHistory = []; // Keeps context for conversation memory
+
+        // Language Configurations
+        const langConfig = {
+            mewari: {
+                name: 'मेवाड़ी',
+                voice: 'hi-IN',
+                prompt: "You are MANAS, a warm, wise Mewari IT Mentor from Udaipur, Rajasthan. Speak in natural Mewari language (written in Devanagari script). Use friendly Rajasthani words like 'खम्मा घणी', 'सा', 'म्हारो', 'आपरो', 'घणो चोखो'. Explain technical computer terms simply in 2-3 short sentences. Topic: IT & Computer Science.",
+                quizPrompt: "You are MANAS IT Guru. Generate ONE multiple-choice IT question in Mewari dialect (Devanagari script). Format strictly as:\nQ: [Question in Mewari]\nA: [Option A]\nB: [Option B]\nC: [Option C]\nD: [Option D]\nAns: [Correct letter A, B, C or D]\nExpl: [1 sentence explanation in Mewari]",
+                suggestions: [
+                    "💾 RAM काईं होवे सा?",
+                    "🌐 Internet कियां चाले है?",
+                    "⚡ CPU रो काईं काम है?",
+                    "🛡️ Virus सूं कियां बचणो?"
+                ],
+                placeholder: "मेवाड़ी या हिन्दी में सवाल पूछो...",
+                listeningMsg: "सुण रया हां... बोलो सा 🎙️",
+                greeting: "खम्मा घणी सा! म्हें MANAS हूँ, आपरो मेवाड़ी IT गुरु। कंप्यूटर री कोई भी बात पूछो!"
+            },
+            hindi: {
+                name: 'हिन्दी',
+                voice: 'hi-IN',
+                prompt: "You are MANAS, a helpful IT Mentor. Respond in simple, clean Hindi (Devanagari script). Keep explanations clear, engaging, and in 2-3 short sentences. Topic: IT & Computer Science.",
+                quizPrompt: "You are MANAS IT Guru. Generate ONE multiple-choice IT question in Hindi. Format strictly as:\nQ: [Question in Hindi]\nA: [Option A]\nB: [Option B]\nC: [Option C]\nD: [Option D]\nAns: [Correct letter A, B, C or D]\nExpl: [1 sentence explanation in Hindi]",
+                suggestions: [
+                    "💾 RAM और ROM में क्या अंतर है?",
+                    "🌐 Internet कैसे काम करता है?",
+                    "⚡ CPU को Computer का दिमाग क्यों कहते हैं?",
+                    "🐍 Python क्या है?"
+                ],
+                placeholder: "हिन्दी में सवाल पूछें...",
+                listeningMsg: "सुन रहे हैं... बोलिए 🎙️",
+                greeting: "नमस्ते! मैं मानस हूँ, आपका IT गुरु। कंप्यूटर विज्ञान के बारे में कुछ भी पूछें!"
+            },
+            bhojpuri: {
+                name: 'भोजपुरी',
+                voice: 'hi-IN',
+                prompt: "You are MANAS, a friendly IT Guru who explains IT concepts in natural Bhojpuri language (in Devanagari script). Keep responses warm, lively, and in 2-3 short sentences.",
+                quizPrompt: "Generate ONE multiple-choice IT question in Bhojpuri. Format strictly as:\nQ: [Question in Bhojpuri]\nA: [Option A]\nB: [Option B]\nC: [Option C]\nD: [Option D]\nAns: [Correct letter A, B, C or D]\nExpl: [1 sentence explanation in Bhojpuri]",
+                suggestions: [
+                    "💾 RAM का होला?",
+                    "🌐 Internet कइसे चलेला?",
+                    "⚡ CPU का काम का बा?",
+                    "📱 Software का होला?"
+                ],
+                placeholder: "भोजपुरी में सवाल पूछीं...",
+                listeningMsg: "सुनत बानी... बोलीं 🎙️",
+                greeting: "प्रणाम! हम मानस हईं, राउर IT गुरु। कम्प्यूटर के बारे में कुछ भी पूछीं!"
+            },
+            gujarati: {
+                name: 'ગુજરાતી',
+                voice: 'gu-IN',
+                prompt: "You are MANAS, an IT Guru who explains computer science in natural Gujarati language (Gujarati script). Keep responses clear, practical, and in 2-3 sentences.",
+                quizPrompt: "Generate ONE multiple-choice IT question in Gujarati. Format strictly as:\nQ: [Question in Gujarati]\nA: [Option A]\nB: [Option B]\nC: [Option C]\nD: [Option D]\nAns: [Correct letter A, B, C or D]\nExpl: [1 sentence explanation in Gujarati]",
+                suggestions: [
+                    "💾 RAM શું છે?",
+                    "🌐 ઇન્ટરનેટ કેવી રીતે કામ કરે છે?",
+                    "⚡ CPU શું કામ કરે છે?",
+                    "💻 કોડિંગ શું છે?"
+                ],
+                placeholder: "ગુજરાતીમાં પ્રશ્ન પૂછો...",
+                listeningMsg: "સાંભળી રહ્યા છીએ... બોલો 🎙️",
+                greeting: "કેમ છો! હું માનસ છું, તમારો IT ગુરુ. કમ્પ્યુટર વિશે કંઈ પણ પૂછો!"
+            },
+            english: {
+                name: 'English',
+                voice: 'en-IN',
+                prompt: "You are MANAS, an IT Guru helping rural students learn technology. Respond in simple, beginner-friendly English with everyday analogies. Keep it to 2-3 clear sentences.",
+                quizPrompt: "Generate ONE multiple-choice IT question in simple English. Format strictly as:\nQ: [Question]\nA: [Option A]\nB: [Option B]\nC: [Option C]\nD: [Option D]\nAns: [Correct letter A, B, C or D]\nExpl: [1 sentence explanation]",
+                suggestions: [
+                    "💾 What is RAM?",
+                    "🌐 How does the Internet work?",
+                    "⚡ What does a CPU do?",
+                    "☁️ What is Cloud Computing?"
+                ],
+                placeholder: "Ask any IT question...",
+                listeningMsg: "Listening... speak now 🎙️",
+                greeting: "Hello! I am MANAS, your IT Mentor. Ask me any computer question!"
+            }
+        };
+
+        /* --------------------------------------------------------------------------
+           Init on Page Load
+           -------------------------------------------------------------------------- */
+        window.addEventListener('DOMContentLoaded', () => {
+            renderSuggestions();
+            initTheme();
+            initPWA();
+            setupNetworkListeners();
+        });
+
+        /* --------------------------------------------------------------------------
+           Language Switching
+           -------------------------------------------------------------------------- */
+        function setLang(langKey, btnEl) {
+            currentLang = langKey;
+            document.querySelectorAll('.lang-pill').forEach(el => el.classList.remove('active'));
+            if (btnEl) btnEl.classList.add('active');
+
+            const cfg = langConfig[currentLang];
+            document.getElementById('textInput').placeholder = cfg.placeholder;
+            renderSuggestions();
+
+            if (isQuizMode) {
+                requestQuizQuestion();
             }
         }
 
-        function startProcess() {
-            // Clear any old voice
+        /* --------------------------------------------------------------------------
+           Suggestions Rendering
+           -------------------------------------------------------------------------- */
+        function renderSuggestions() {
+            const container = document.getElementById('suggestionsBox');
+            container.innerHTML = '';
+            const list = langConfig[currentLang].suggestions;
+            list.forEach(item => {
+                const btn = document.createElement('button');
+                btn.className = 'sugg-chip';
+                btn.textContent = item;
+                btn.onclick = () => {
+                    document.getElementById('textInput').value = item.replace(/^[💾🌐⚡🛡️📱💻☁️]\s*/, '');
+                    sendText();
+                };
+                container.appendChild(btn);
+            });
+        }
+
+        /* --------------------------------------------------------------------------
+           Theme Management (Dark / Light)
+           -------------------------------------------------------------------------- */
+        function initTheme() {
+            const saved = localStorage.getItem('manas_theme') || 'dark';
+            document.documentElement.setAttribute('data-theme', saved);
+            document.getElementById('themeBtn').textContent = saved === 'dark' ? '🌙' : '☀️';
+        }
+
+        function toggleTheme() {
+            const current = document.documentElement.getAttribute('data-theme') || 'dark';
+            const next = current === 'dark' ? 'light' : 'dark';
+            document.documentElement.setAttribute('data-theme', next);
+            localStorage.setItem('manas_theme', next);
+            document.getElementById('themeBtn').textContent = next === 'dark' ? '🌙' : '☀️';
+        }
+
+        /* --------------------------------------------------------------------------
+           Quiz Mode Toggle & Generation
+           -------------------------------------------------------------------------- */
+        function toggleQuizMode() {
+            isQuizMode = !isQuizMode;
+            const btn = document.getElementById('quizModeBtn');
+            const scoreBadge = document.getElementById('quizScoreBadge');
+
+            if (isQuizMode) {
+                btn.classList.add('active');
+                btn.textContent = '🎓 Quiz ON';
+                scoreBadge.style.display = 'inline-block';
+                addSystemMessage("🎉 <b>Quiz Mode Activated!</b> IT सवाल तैयार हो रया है...");
+                requestQuizQuestion();
+            } else {
+                btn.classList.remove('active');
+                btn.textContent = '🎓 Quiz Mode';
+                scoreBadge.style.display = 'none';
+                addSystemMessage("💬 <b>Chat Mode Activated!</b> अब आप कुछ भी पूछ सको सा।");
+            }
+        }
+
+        async function requestQuizQuestion() {
+            setGuruState('thinking', 'QUIZ PREPARING...');
+            showTypingIndicator();
+
+            const cfg = langConfig[currentLang];
+            const prompt = `${cfg.quizPrompt}\nGenerate a fresh, unique question. Seed: ${Date.now()}`;
+
+            try {
+                const url = `https://text.pollinations.ai/prompt/${encodeURIComponent(prompt)}?model=openai&cache=false&seed=${Date.now()}`;
+                const response = await fetch(url);
+                if (!response.ok) throw new Error("Quiz API Error");
+                const rawText = await response.text();
+                removeTypingIndicator();
+                setGuruState('idle', 'SYSTEM READY');
+                renderQuizCard(rawText);
+            } catch (err) {
+                removeTypingIndicator();
+                setGuruState('idle', 'SYSTEM READY');
+                // Fallback built-in question
+                renderFallbackQuiz();
+            }
+        }
+
+        function renderQuizCard(rawText) {
+            // Parse Q:, A:, B:, C:, D:, Ans:, Expl:
+            const lines = rawText.split('\n').map(l => l.trim()).filter(Boolean);
+            let qText = "Computer में RAM का क्या कार्य है?";
+            let opts = { A: "Data Store (Permanent)", B: "Fast Temporary Memory", C: "Display Picture", D: "Sound Output" };
+            let correctAns = "B";
+            let explanation = "RAM एक अस्थायी (temporary) मेमोरी है जो वर्तमान काम को तेज़ बनाती है।";
+
+            lines.forEach(l => {
+                if (l.startsWith('Q:') || l.startsWith('Q.')) qText = l.replace(/^Q[:.]\s*/, '');
+                else if (l.startsWith('A:') || l.startsWith('A.')) opts.A = l.replace(/^A[:.]\s*/, '');
+                else if (l.startsWith('B:') || l.startsWith('B.')) opts.B = l.replace(/^B[:.]\s*/, '');
+                else if (l.startsWith('C:') || l.startsWith('C.')) opts.C = l.replace(/^C[:.]\s*/, '');
+                else if (l.startsWith('D:') || l.startsWith('D.')) opts.D = l.replace(/^D[:.]\s*/, '');
+                else if (l.startsWith('Ans:') || l.startsWith('Answer:')) {
+                    const match = l.match(/[A-D]/i);
+                    if (match) correctAns = match[0].toUpperCase();
+                } else if (l.startsWith('Expl:') || l.startsWith('Explanation:')) {
+                    explanation = l.replace(/^(Expl|Explanation)[:.]\s*/, '');
+                }
+            });
+
+            const chat = document.getElementById('chat');
+            const group = document.createElement('div');
+            group.className = 'msg-group guru';
+
+            const sender = document.createElement('div');
+            sender.className = 'msg-sender';
+            sender.textContent = 'MANAS QUIZ GURU';
+
+            const card = document.createElement('div');
+            card.className = 'quiz-card';
+
+            const qEl = document.createElement('div');
+            qEl.className = 'quiz-question';
+            qEl.innerHTML = `❓ <b>${escapeHtml(qText)}</b>`;
+            card.appendChild(qEl);
+
+            const optContainer = document.createElement('div');
+            optContainer.className = 'quiz-options';
+
+            ['A', 'B', 'C', 'D'].forEach(letter => {
+                const optBtn = document.createElement('button');
+                optBtn.className = 'quiz-opt-btn';
+                optBtn.innerHTML = `<b>${letter}.</b> ${escapeHtml(opts[letter] || letter)}`;
+                optBtn.onclick = () => handleQuizAnswer(optBtn, letter, correctAns, explanation, card);
+                optContainer.appendChild(optBtn);
+            });
+
+            card.appendChild(optContainer);
+            group.appendChild(sender);
+            group.appendChild(card);
+            chat.appendChild(group);
+            chat.scrollTop = chat.scrollHeight;
+
+            speak(qText);
+        }
+
+        function renderFallbackQuiz() {
+            const fallback = `Q: कंप्यूटर का मस्तिष्क (Brain) किसे कहते हैं?
+A: RAM
+B: Hard Disk
+C: CPU (Central Processing Unit)
+D: Monitor
+Ans: C
+Expl: CPU कंप्यूटर की सारी गणनाएं और निर्णय लेता है, इसलिए इसे दिमाग कहते हैं।`;
+            renderQuizCard(fallback);
+        }
+
+        function handleQuizAnswer(selectedBtn, chosenLetter, correctLetter, explanation, card) {
+            const allBtns = card.querySelectorAll('.quiz-opt-btn');
+            allBtns.forEach(b => b.disabled = true);
+
+            quizTotal++;
+            const isCorrect = chosenLetter === correctLetter;
+
+            if (isCorrect) {
+                quizScore++;
+                selectedBtn.classList.add('correct');
+                selectedBtn.innerHTML += ' ✅ <b>(सही जवाब!)</b>';
+                speak("घणो चोखो! सही जवाब है सा।");
+            } else {
+                selectedBtn.classList.add('wrong');
+                selectedBtn.innerHTML += ' ❌';
+                allBtns.forEach(b => {
+                    if (b.innerText.trim().startsWith(correctLetter + '.')) {
+                        b.classList.add('correct');
+                        b.innerHTML += ' ✅ <b>(सही उत्तर)</b>';
+                    }
+                });
+                speak("कोई बात नी, सही जवाब " + correctLetter + " है।");
+            }
+
+            document.getElementById('quizScore').textContent = quizScore;
+            document.getElementById('quizTotal').textContent = quizTotal;
+
+            // Show explanation
+            const explDiv = document.createElement('div');
+            explDiv.style.fontSize = '12px';
+            explDiv.style.color = 'var(--text-muted)';
+            explDiv.style.marginTop = '6px';
+            explDiv.innerHTML = `💡 <b>समझो:</b> ${escapeHtml(explanation)}`;
+            card.appendChild(explDiv);
+
+            // Next Question Button
+            const nextBtn = document.createElement('button');
+            nextBtn.className = 'quiz-toggle-btn active';
+            nextBtn.style.marginTop = '8px';
+            nextBtn.style.alignSelf = 'flex-start';
+            nextBtn.textContent = 'अगलो सवाल ➡️';
+            nextBtn.onclick = () => requestQuizQuestion();
+            card.appendChild(nextBtn);
+
+            document.getElementById('chat').scrollTop = document.getElementById('chat').scrollHeight;
+        }
+
+        /* --------------------------------------------------------------------------
+           AI Response (Pollinations.ai Free Backend + Memory)
+           -------------------------------------------------------------------------- */
+        async function getAIResponse(userQuery) {
+            const cfg = langConfig[currentLang];
+
+            // Build contextual prompt including recent conversation turns
+            let memorySnippet = "";
+            if (conversationHistory.length > 0) {
+                memorySnippet = "Recent conversation context:\n" +
+                    conversationHistory.slice(-4).map(turn => `${turn.role === 'user' ? 'Student' : 'Guru'}: ${turn.text}`).join('\n') +
+                    "\n\n";
+            }
+
+            const systemPrompt = `${cfg.prompt}\n${memorySnippet}Student asks: ${userQuery}\nMentor response:`;
+
+            try {
+                const url = `https://text.pollinations.ai/prompt/${encodeURIComponent(systemPrompt)}?model=openai&cache=false&seed=${Date.now()}`;
+                const response = await fetch(url);
+                if (!response.ok) throw new Error("Pollinations API failed");
+                let reply = await response.text();
+                reply = reply.replace(/[*#_~`]/g, '').trim();
+                return reply || "हाँ सा, कंप्यूटर में ईं बात रो घणो महत्व है।";
+            } catch (err) {
+                return "माफी चाहूँ सा, नेटवर्क थोड़ा धीमे चल रहा है। एक बार फिर कोशिश करो सा!";
+            }
+        }
+
+        /* --------------------------------------------------------------------------
+           Processing User Query
+           -------------------------------------------------------------------------- */
+        async function processQuery(query) {
+            if (!query || !query.trim() || isProcessing) return;
+
+            isProcessing = true;
+            appendMessage('user', query);
+            conversationHistory.push({ role: 'user', text: query });
+
+            setGuruState('thinking', 'GURU IS THINKING...');
+            showTypingIndicator();
+
+            const answer = await getAIResponse(query);
+
+            removeTypingIndicator();
+            appendMessage('guru', answer);
+            conversationHistory.push({ role: 'guru', text: answer });
+
+            setGuruState('speaking', 'SPEAKING...');
+            speak(answer, () => {
+                setGuruState('idle', 'SYSTEM READY');
+            });
+
+            isProcessing = false;
+        }
+
+        /* --------------------------------------------------------------------------
+           Chat Message Rendering
+           -------------------------------------------------------------------------- */
+        function appendMessage(role, text) {
+            const chat = document.getElementById('chat');
+            const group = document.createElement('div');
+            group.className = `msg-group ${role}`;
+
+            const sender = document.createElement('div');
+            sender.className = 'msg-sender';
+            sender.textContent = role === 'user' ? 'YOU (विद्यार्थी)' : 'MANAS GURU';
+
+            const bubble = document.createElement('div');
+            bubble.className = 'msg-bubble';
+            bubble.innerHTML = escapeHtml(text).replace(/\n/g, '<br>');
+
+            group.appendChild(sender);
+            group.appendChild(bubble);
+
+            if (role === 'guru') {
+                const actions = document.createElement('div');
+                actions.className = 'bubble-actions';
+
+                // Listen button
+                const ttsBtn = document.createElement('button');
+                ttsBtn.className = 'mini-action-btn';
+                ttsBtn.innerHTML = '🔊 सुणो';
+                ttsBtn.onclick = () => speak(text);
+                actions.appendChild(ttsBtn);
+
+                // Share button (Web Share API)
+                const shareBtn = document.createElement('button');
+                shareBtn.className = 'mini-action-btn';
+                shareBtn.innerHTML = '📤 Share';
+                shareBtn.onclick = () => shareAnswer(text);
+                actions.appendChild(shareBtn);
+
+                group.appendChild(actions);
+            }
+
+            chat.appendChild(group);
+            chat.scrollTop = chat.scrollHeight;
+        }
+
+        function addSystemMessage(htmlText) {
+            const chat = document.getElementById('chat');
+            const group = document.createElement('div');
+            group.className = 'msg-group guru';
+            group.innerHTML = `<div class="msg-bubble" style="background:transparent;border:1px dashed var(--border);font-size:12px;color:var(--text-muted);">${htmlText}</div>`;
+            chat.appendChild(group);
+            chat.scrollTop = chat.scrollHeight;
+        }
+
+        function showTypingIndicator() {
+            const chat = document.getElementById('chat');
+            const ind = document.createElement('div');
+            ind.id = 'typingIndicator';
+            ind.className = 'msg-group guru';
+            ind.innerHTML = `
+                <div class="msg-sender">MANAS GURU</div>
+                <div class="typing-bubble">
+                    <span></span><span></span><span></span>
+                </div>
+            `;
+            chat.appendChild(ind);
+            chat.scrollTop = chat.scrollHeight;
+        }
+
+        function removeTypingIndicator() {
+            const ind = document.getElementById('typingIndicator');
+            if (ind) ind.remove();
+        }
+
+        function clearChat() {
+            conversationHistory = [];
+            const chat = document.getElementById('chat');
+            chat.innerHTML = `
+                <div class="msg-group guru">
+                    <div class="msg-sender">MANAS GURU</div>
+                    <div class="msg-bubble">
+                        🙏 <b>खम्मा घणी सा!</b> चैट साफ़ कर दी गई है।<br>
+                        अब नया सवाल पूछो सा!
+                    </div>
+                    <div class="bubble-actions">
+                        <button class="mini-action-btn" onclick="speakCurrentBubble(this)">🔊 सुणो</button>
+                    </div>
+                </div>
+            `;
+        }
+
+        /* --------------------------------------------------------------------------
+           Voice Recognition (Speech-to-Text)
+           -------------------------------------------------------------------------- */
+        function startVoice() {
+            if (isProcessing) return;
             synth.cancel();
 
-            const Recognition = window.webkitSpeechRecognition || window.SpeechRecognition;
-            if (!Recognition) {
-                alert("Please use Google Chrome for this app.");
+            const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
+            if (!SpeechRecognition) {
+                alert("Voice recognition is best supported on Google Chrome or MS Edge.\nPlease use Chrome for the best experience!");
                 return;
             }
 
-            const rec = new Recognition();
-            rec.lang = 'hi-IN'; // Listen for Hindi/Indian speech
+            const recognition = new SpeechRecognition();
+            recognition.lang = langConfig[currentLang].voice;
+            recognition.interimResults = false;
+            recognition.maxAlternatives = 1;
 
-            rec.onstart = () => {
-                document.getElementById('mic').classList.add('listening');
-                document.getElementById('status').innerText = "LISTENING...";
+            const micBtn = document.getElementById('mic');
+            const micStatus = document.getElementById('micStatusText');
+
+            recognition.onstart = () => {
+                micBtn.classList.add('listening');
+                micStatus.textContent = langConfig[currentLang].listeningMsg;
+                setGuruState('listening', 'LISTENING...');
             };
 
-            rec.onresult = async (event) => {
+            recognition.onresult = (event) => {
                 const query = event.results[0][0].transcript;
-                const chatBox = document.getElementById('chat');
-                
-                // Show User Text
-                chatBox.innerHTML = `<div class="user-txt">Aap: ${query}</div><div><b>Guru is thinking...</b></div>`;
-                
-                // Get AI Answer
-                const answer = await getAIResponse(query);
-                
-                // Show AI Answer
-                chatBox.innerHTML = `<div class="user-txt">Aap: ${query}</div><div style="margin-top:10px;"><b>Guru:</b> ${answer}</div>`;
-                
-                // Trigger Voice
-                speak(answer);
+                micBtn.classList.remove('listening');
+                micStatus.textContent = "माइक दबाइने बोलो";
+                setGuruState('idle', 'SYSTEM READY');
+                processQuery(query);
             };
 
-            rec.onend = () => {
-                document.getElementById('mic').classList.remove('listening');
-                document.getElementById('status').innerText = "READY";
+            recognition.onerror = (event) => {
+                micBtn.classList.remove('listening');
+                micStatus.textContent = "आवाज़ नहीं सुनी, फिर प्रयास करें";
+                setGuruState('idle', 'SYSTEM READY');
+                setTimeout(() => {
+                    micStatus.textContent = "माइक दबाइने बोलो";
+                }, 2500);
             };
 
-            rec.start();
+            recognition.onend = () => {
+                micBtn.classList.remove('listening');
+                if (document.getElementById('statusLabel').textContent === 'LISTENING...') {
+                    setGuruState('idle', 'SYSTEM READY');
+                    micStatus.textContent = "माइक दबाइने बोलो";
+                }
+            };
+
+            try {
+                recognition.start();
+            } catch (e) {
+                console.error("Speech recognition already running", e);
+            }
         }
 
-        function speak(text) {
-            // Clean the text from stars or hashtags
-            const cleanText = text.replace(/[*#]/g, '');
+        /* --------------------------------------------------------------------------
+           Text-to-Speech (Voice Output)
+           -------------------------------------------------------------------------- */
+        function speak(text, onCompleteCallback) {
+            if (!synth) return;
+            synth.cancel();
+
+            const cleanText = text.replace(/[*#_~`]/g, '').trim();
             const utterance = new SpeechSynthesisUtterance(cleanText);
-            
-            // Set language to Hindi
-            utterance.lang = 'hi-IN';
-            utterance.rate = 0.9; // Slightly slower for clarity
+            utterance.lang = langConfig[currentLang].voice;
+            utterance.rate = 0.92;
             utterance.pitch = 1.0;
+
+            // Pick the best available Hindi/regional voice
+            const voices = synth.getVoices();
+            const regionalVoice = voices.find(v => v.lang.startsWith(utterance.lang.split('-')[0]) || v.name.includes('Hindi') || v.name.includes('India'));
+            if (regionalVoice) {
+                utterance.voice = regionalVoice;
+            }
+
+            utterance.onend = () => {
+                setGuruState('idle', 'SYSTEM READY');
+                if (onCompleteCallback) onCompleteCallback();
+            };
+
+            utterance.onerror = () => {
+                setGuruState('idle', 'SYSTEM READY');
+                if (onCompleteCallback) onCompleteCallback();
+            };
 
             synth.speak(utterance);
         }
 
-        // Voice list initialization (Chrome requirement)
-        window.speechSynthesis.getVoices();
+        function speakGreeting() {
+            speak(langConfig[currentLang].greeting);
+        }
+
+        function speakCurrentBubble(btn) {
+            const bubble = btn.closest('.msg-group').querySelector('.msg-bubble');
+            if (bubble) {
+                speak(bubble.innerText);
+            }
+        }
+
+        /* --------------------------------------------------------------------------
+           UI State & Avatar Status
+           -------------------------------------------------------------------------- */
+        function setGuruState(state, labelText) {
+            const dot = document.getElementById('statusDot');
+            const lbl = document.getElementById('statusLabel');
+            const avatar = document.getElementById('avatarIcon');
+
+            dot.className = 'status-dot';
+            avatar.className = 'brand-avatar';
+
+            if (state === 'listening') {
+                dot.classList.add('listening');
+                avatar.classList.add('listening');
+            } else if (state === 'thinking') {
+                dot.classList.add('thinking');
+                avatar.classList.add('thinking');
+            } else if (state === 'speaking') {
+                avatar.classList.add('speaking');
+            }
+
+            lbl.textContent = labelText;
+        }
+
+        /* --------------------------------------------------------------------------
+           Input Handlers
+           -------------------------------------------------------------------------- */
+        function sendText() {
+            const input = document.getElementById('textInput');
+            const val = input.value.trim();
+            if (!val) return;
+            input.value = '';
+            processQuery(val);
+        }
+
+        document.getElementById('textInput').addEventListener('keydown', (e) => {
+            if (e.key === 'Enter') sendText();
+        });
+
+        /* --------------------------------------------------------------------------
+           Web Share API
+           -------------------------------------------------------------------------- */
+        async function shareAnswer(text) {
+            const shareData = {
+                title: 'MANAS AI IT Guru',
+                text: `MANAS AI IT Guru ने बताया:\n\n"${text}"\n\nसीखो IT अपनी भाषा में: https://divyarajsingh2021-pixel.github.io/Manas-Ai/`,
+                url: 'https://divyarajsingh2021-pixel.github.io/Manas-Ai/'
+            };
+
+            if (navigator.share) {
+                try {
+                    await navigator.share(shareData);
+                } catch (err) {
+                    console.log('Share canceled or failed', err);
+                }
+            } else {
+                navigator.clipboard.writeText(shareData.text);
+                alert("जवाब कॉपी हो गया! WhatsApp पर शेयर करें 📋");
+            }
+        }
+
+        /* --------------------------------------------------------------------------
+           PWA Registration & Install Banner
+           -------------------------------------------------------------------------- */
+        function initPWA() {
+            if ('serviceWorker' in navigator) {
+                navigator.serviceWorker.register('./sw.js').catch(err => {
+                    console.log('SW registration skipped', err);
+                });
+            }
+
+            window.addEventListener('beforeinstallprompt', (e) => {
+                e.preventDefault();
+                deferredPrompt = e;
+                const toast = document.getElementById('installToast');
+                if (toast) toast.style.display = 'flex';
+
+                document.getElementById('installBtn').onclick = async () => {
+                    toast.style.display = 'none';
+                    if (deferredPrompt) {
+                        deferredPrompt.prompt();
+                        const { outcome } = await deferredPrompt.userChoice;
+                        deferredPrompt = null;
+                    }
+                };
+            });
+        }
+
+        function setupNetworkListeners() {
+            const banner = document.getElementById('offlineBanner');
+            window.addEventListener('offline', () => { banner.style.display = 'block'; });
+            window.addEventListener('online', () => { banner.style.display = 'none'; });
+        }
+
+        function escapeHtml(str) {
+            return str
+                .replace(/&/g, '&amp;')
+                .replace(/</g, '&lt;')
+                .replace(/>/g, '&gt;')
+                .replace(/"/g, '&quot;')
+                .replace(/'/g, '&#039;');
+        }
+
+        // Voice list initialization fix for Chromium
+        if (typeof speechSynthesis !== 'undefined') {
+            speechSynthesis.onvoiceschanged = () => synth.getVoices();
+            synth.getVoices();
+        }
     </script>
 </body>
 </html>
